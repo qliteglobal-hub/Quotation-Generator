@@ -632,7 +632,9 @@ export default function EnhancedCart() {
               productId: !String((item as any)._id || '').startsWith('custom-')
                 ? ((item as any)._id || undefined)
                 : undefined,
-              sku: item.sku || '',
+              sku: item.isDriver 
+                ? ((item as any).name || 'Driver')
+                : item.sku || '',
               category: item.category || '',
               quantity: item.quantity ?? 1,
               unitPrice: item.price ?? 0,
@@ -650,7 +652,9 @@ export default function EnhancedCart() {
               reflectorFinish: (item as any).reflectorFinish || '',
               dimension: (item as any).dimension || '',
               isDriver: item.isDriver || false,
-              driverName: item.isDriver ? (item as any).name || '' : '',
+              driverName: item.isDriver 
+                ? `${(item as any).name || 'Driver'}${(item as any).wattage ? ' - ' + (item as any).wattage + 'W' : ''}`
+                : '',
               driverWattage: item.isDriver ? (item as any).wattage || '' : '',
               itemCode: '',
             })),
@@ -1275,7 +1279,9 @@ export default function EnhancedCart() {
               productId: !String((item as any)._id || '').startsWith('custom-')
                 ? ((item as any)._id || undefined)
                 : undefined,
-              sku: item.sku || '',
+              sku: item.isDriver 
+                ? ((item as any).name || 'Driver')
+                : item.sku || '',
               category: item.category || '',
               quantity: item.quantity ?? 1,
               unitPrice: item.price ?? 0,
@@ -1293,7 +1299,9 @@ export default function EnhancedCart() {
               reflectorFinish: (item as any).reflectorFinish || '',
               dimension: (item as any).dimension || '',
               isDriver: item.isDriver || false,
-              driverName: item.isDriver ? (item as any).name || '' : '',
+              driverName: item.isDriver 
+                ? `${(item as any).name || 'Driver'}${(item as any).wattage ? ' - ' + (item as any).wattage + 'W' : ''}`
+                : '',
               driverWattage: item.isDriver ? (item as any).wattage || '' : '',
               itemCode: '',
             })),
