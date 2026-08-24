@@ -5,10 +5,17 @@ import Link from "next/link";
 import Image from "next/image";
 import { LogOut, User, ShieldCheck, KeyRound, ShoppingCart } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { useEffect } from "react";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
   const { cart } = useCart();
+
+  useEffect(() => {
+    if (session && (session as any).error) {
+      signOut({ callbackUrl: "/login" });
+    }
+  }, [session]);
 
   const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
 

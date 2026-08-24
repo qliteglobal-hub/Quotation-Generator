@@ -26,7 +26,7 @@ export default function AdminUsersPage() {
   const [filter, setFilter] = useState("all");
 
   useEffect(() => {
-    if (status === "unauthenticated" || (status === "authenticated" && session?.user?.role !== "admin")) {
+    if (status === "unauthenticated" || (status === "authenticated" && (session?.user?.role !== "admin" || session?.user?.email !== "admin@qlite.com"))) {
       router.push("/products");
     } else if (status === "authenticated") {
       fetchUsers();
@@ -152,47 +152,51 @@ export default function AdminUsersPage() {
                       {user.status === "rejected" && <span className="inline-flex items-center gap-1 text-red-700 text-xs font-bold bg-red-50 px-3 py-1.5 rounded-full">🚫 Access Blocked</span>}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                      <div className="flex items-center justify-end gap-2">
-                        {(!user.status || user.status === "pending") && (
-                          <>
-                            <button onClick={() => handleUpdateStatus(user._id, "approved")} className="text-green-600 hover:text-green-900 font-semibold px-2 py-1">Approve</button>
-                            <button onClick={() => handleUpdateStatus(user._id, "rejected")} className="text-red-600 hover:text-red-900 font-semibold px-2 py-1">Reject</button>
-                          </>
-                        )}
-                        
-                        {user.status === "approved" && (
-                          <>
-                            <button onClick={() => handleUpdateStatus(user._id, "rejected")} className="text-red-600 hover:text-red-900 font-semibold px-2 py-1">Reject</button>
-                            {user.role === 'admin' ? (
-                              <button
-                                onClick={() => {
-                                  if (confirm('Remove admin access from this user?')) {
-                                    handleRoleChange(user._id, 'user');
-                                  }
-                                }}
-                                className="text-orange-500 hover:text-orange-700 text-xs cursor-pointer px-2 py-1 rounded hover:bg-orange-50 transition-all"
-                              >
-                                Remove Admin
-                              </button>
-                            ) : (
-                              <button
-                                onClick={() => {
-                                  if (confirm('Give admin access to this user?')) {
-                                    handleRoleChange(user._id, 'admin');
-                                  }
-                                }}
-                                className="text-blue-500 hover:text-blue-700 text-xs cursor-pointer px-2 py-1 rounded hover:bg-blue-50 transition-all"
-                              >
-                                Make Admin
-                              </button>
-                            )}
-                          </>
-                        )}
+                      {user.email === 'admin@qlite.com' ? (
+                        <span className="text-gray-400 text-xs italic mr-2">Protected Account</span>
+                      ) : (
+                        <div className="flex items-center justify-end gap-2">
+                          {(!user.status || user.status === "pending") && (
+                            <>
+                              <button onClick={() => handleUpdateStatus(user._id, "approved")} className="text-green-600 hover:text-green-900 font-semibold px-2 py-1">Approve</button>
+                              <button onClick={() => handleUpdateStatus(user._id, "rejected")} className="text-red-600 hover:text-red-900 font-semibold px-2 py-1">Reject</button>
+                            </>
+                          )}
+                          
+                          {user.status === "approved" && (
+                            <>
+                              <button onClick={() => handleUpdateStatus(user._id, "rejected")} className="text-red-600 hover:text-red-900 font-semibold px-2 py-1">Reject</button>
+                              {user.role === 'admin' ? (
+                                <button
+                                  onClick={() => {
+                                    if (confirm('Remove admin access from this user?')) {
+                                      handleRoleChange(user._id, 'user');
+                                    }
+                                  }}
+                                  className="text-orange-500 hover:text-orange-700 text-xs cursor-pointer px-2 py-1 rounded hover:bg-orange-50 transition-all"
+                                >
+                                  Remove Admin
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() => {
+                                    if (confirm('Give admin access to this user?')) {
+                                      handleRoleChange(user._id, 'admin');
+                                    }
+                                  }}
+                                  className="text-blue-500 hover:text-blue-700 text-xs cursor-pointer px-2 py-1 rounded hover:bg-blue-50 transition-all"
+                                >
+                                  Make Admin
+                                </button>
+                              )}
+                            </>
+                          )}
 
-                        {user.status === "rejected" && (
-                          <button onClick={() => handleUpdateStatus(user._id, "approved")} className="text-green-600 hover:text-green-900 font-semibold px-2 py-1">Approve</button>
-                        )}
-                      </div>
+                          {user.status === "rejected" && (
+                            <button onClick={() => handleUpdateStatus(user._id, "approved")} className="text-green-600 hover:text-green-900 font-semibold px-2 py-1">Approve</button>
+                          )}
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}

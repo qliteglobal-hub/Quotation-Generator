@@ -49,12 +49,35 @@ export const authOptions: NextAuthOptions = {
         token.role = user.role;
         token.id = user.id;
       }
+      
+      if (token.id) {
+        try {
+          await dbConnect();
+          const dbUser = await User.findById(token.id).select('role status');
+          
+          if (!dbUser || dbUser.status !== 'approved') {
+            token.error = "AccessRevoked";
+          } else if (token.role === 'admin' && dbUser.role !== 'admin') {
+            token.error = "AdminRevoked";
+            token.role = dbUser.role;
+          } else {
+            token.role = dbUser.role;
+            delete token.error;
+          }
+        } catch (error) {
+          console.error("Error verifying user in jwt callback", error);
+        }
+      }
+      
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.role = token.role as string;
         session.user.id = token.id as string;
+      }
+      if (token.error) {
+        (session as any).error = token.error;
       }
       return session;
     },

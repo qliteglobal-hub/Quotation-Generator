@@ -7,7 +7,7 @@ import { authOptions } from "@/lib/auth";
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || session.user?.role !== "admin") {
+    if (!session || session.user?.role !== "admin" || session.user?.email !== "admin@qlite.com") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -24,7 +24,7 @@ export async function GET() {
 export async function PATCH(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || session.user?.role !== "admin") {
+    if (!session || session.user?.role !== "admin" || session.user?.email !== "admin@qlite.com") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -34,15 +34,21 @@ export async function PATCH(req: Request) {
     }
 
     await dbConnect();
+    
+    const targetUser = await User.findById(userId);
+    if (!targetUser) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+    
+    if (targetUser.email === "admin@qlite.com") {
+      return NextResponse.json({ error: "Cannot modify the primary admin account" }, { status: 403 });
+    }
+
     const updateData: any = {};
     if (status) updateData.status = status;
     if (role) updateData.role = role;
 
     const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
-    
-    if (!updatedUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
 
     return NextResponse.json(updatedUser);
   } catch (error: any) {

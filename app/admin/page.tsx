@@ -740,12 +740,14 @@ export default function AdminDashboard() {
               <Plus size={20} />
               Add Product
             </button>
-            <a
-              href="/admin/users"
-              className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-900 flex items-center gap-2"
-            >
-              Manage Users
-            </a>
+            {session?.user?.email === "admin@qlite.com" && (
+              <a
+                href="/admin/users"
+                className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-900 flex items-center gap-2"
+              >
+                Manage Users
+              </a>
+            )}
           </div>
         </div>
 
