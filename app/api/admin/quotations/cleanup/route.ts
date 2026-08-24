@@ -8,6 +8,9 @@ export async function DELETE(req: Request) {
   if ("error" in authCheck) {
     return NextResponse.json({ error: authCheck.error }, { status: authCheck.status });
   }
+  if (authCheck.session.user.email !== "admin@qlite.com") {
+    return NextResponse.json({ error: "Forbidden: Super Admin access required" }, { status: 403 });
+  }
   try {
     await dbConnect();
     const sixtyDaysAgo = new Date();

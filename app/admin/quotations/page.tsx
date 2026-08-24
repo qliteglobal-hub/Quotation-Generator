@@ -50,7 +50,7 @@ export default function AdminQuotationsPage() {
   };
 
   useEffect(() => {
-    if (session?.user?.role === 'admin') {
+    if (session?.user?.role === 'admin' && session?.user?.email === 'admin@qlite.com') {
       fetch('/api/admin/quotations/cleanup', { 
         method: 'DELETE' 
       }).then(res => res.json())
@@ -65,7 +65,7 @@ export default function AdminQuotationsPage() {
   useEffect(() => {
     if (status === "loading") return;
 
-    if (!session || session.user?.role !== "admin") {
+    if (!session || session.user?.role !== "admin" || session.user?.email !== "admin@qlite.com") {
       router.push("/");
       return;
     }

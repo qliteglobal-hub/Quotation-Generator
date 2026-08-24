@@ -1,6 +1,6 @@
 "use client";
 
-import { SessionProvider } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Package, Zap, LayoutDashboard, Monitor, Settings, FileText } from "lucide-react";
@@ -11,19 +11,21 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   const navItems = [
     { href: "/admin", label: "LED Lights", icon: Package },
     { href: "/admin/led-displays", label: "LED Displays", icon: Monitor },
     { href: "/admin/lighting-controls", label: "Lighting Controls", icon: Settings },
     { href: "/admin/drivers", label: "Drivers", icon: Zap },
-    { href: "/admin/quotations", label: "Quotations", icon: FileText },
+    ...(session?.user?.email === "admin@qlite.com"
+      ? [{ href: "/admin/quotations", label: "Quotations", icon: FileText }]
+      : []),
   ];
 
   return (
-    <SessionProvider>
-      <div className="min-h-screen bg-gray-50">
-        {/* Navigation Bar */}
+    <div className="min-h-screen bg-gray-50">
+      {/* Navigation Bar */}
         <nav className="bg-white shadow-sm border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-6">
             <div className="flex items-center justify-between h-16">
@@ -55,9 +57,8 @@ export default function AdminLayout({
           </div>
         </nav>
 
-        {/* Main Content */}
-        {children}
-      </div>
-    </SessionProvider>
+      {/* Main Content */}
+      {children}
+    </div>
   );
 }
