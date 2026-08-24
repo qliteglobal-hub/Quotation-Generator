@@ -11,6 +11,8 @@ interface User {
   name: string;
   email: string;
   companyName: string;
+  country: string;
+  city: string;
   role: string;
   status: string;
   createdAt: string;
@@ -100,6 +102,9 @@ export default function AdminUsersPage() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Country</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">City/Territory</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
@@ -110,24 +115,43 @@ export default function AdminUsersPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.name}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.email}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.companyName}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.country || '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.city || '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        user.role === 'admin' ? 'bg-blue-100 text-blue-800' :
+                        user.role === 'manager' ? 'bg-purple-100 text-purple-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {user.role || 'user'}
+                      </span>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
                       {user.status === "approved" && <span className="inline-flex items-center gap-1 text-green-600 text-xs font-semibold bg-green-50 px-2 py-1 rounded-full"><CheckCircle size={14}/> Approved</span>}
                       {(!user.status || user.status === "pending") && <span className="inline-flex items-center gap-1 text-yellow-600 text-xs font-semibold bg-yellow-50 px-2 py-1 rounded-full"><Clock size={14}/> Pending</span>}
                       {user.status === "rejected" && <span className="inline-flex items-center gap-1 text-red-600 text-xs font-semibold bg-red-50 px-2 py-1 rounded-full"><XCircle size={14}/> Rejected</span>}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                      {user.status !== "approved" && (
-                        <button onClick={() => handleUpdateStatus(user._id, "approved")} className="text-green-600 hover:text-green-900 font-semibold mr-4">Approve</button>
-                      )}
-                      {user.status !== "rejected" && (
-                        <button onClick={() => handleUpdateStatus(user._id, "rejected")} className="text-red-600 hover:text-red-900 font-semibold">Reject</button>
-                      )}
+                      <div className="flex items-center justify-end gap-2">
+                        {user.status !== "approved" && (
+                          <button onClick={() => handleUpdateStatus(user._id, "approved")} className="text-green-600 hover:text-green-900 font-semibold px-2 py-1">Approve</button>
+                        )}
+                        {user.status !== "rejected" && (
+                          <button onClick={() => handleUpdateStatus(user._id, "rejected")} className="text-red-600 hover:text-red-900 font-semibold px-2 py-1">Reject</button>
+                        )}
+                        <button
+                          onClick={() => handleUpdateStatus(user._id, 'rejected')}
+                          className="text-red-500 hover:text-red-700 text-xs cursor-pointer px-2 py-1 rounded hover:bg-red-50"
+                        >
+                          Remove Access
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
                 {filteredUsers.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="px-6 py-8 text-center text-gray-500">No users found.</td>
+                    <td colSpan={8} className="px-6 py-8 text-center text-gray-500">No users found.</td>
                   </tr>
                 )}
               </tbody>

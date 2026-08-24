@@ -34,3 +34,18 @@ export async function GET(req: Request) {
     );
   }
 }
+
+export async function DELETE(req: Request) {
+  const authCheck = await requireAdmin(req);
+  if ("error" in authCheck) {
+    return NextResponse.json({ error: authCheck.error }, { status: authCheck.status });
+  }
+  try {
+    await dbConnect();
+    const { id } = await req.json();
+    await Quotation.findByIdAndDelete(id);
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}

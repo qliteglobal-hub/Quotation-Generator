@@ -12,7 +12,9 @@ export async function GET() {
     }
 
     await dbConnect();
-    const users = await User.find({}).sort({ createdAt: -1 });
+    const users = await User.find({}, {
+      name: 1, email: 1, companyName: 1, country: 1, city: 1, role: 1, status: 1, createdAt: 1
+    }).sort({ createdAt: -1 });
     return NextResponse.json(users);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

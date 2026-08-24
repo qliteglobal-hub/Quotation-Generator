@@ -3379,21 +3379,26 @@ export default function EnhancedCart() {
                                       </div>
                                       <div className="grid grid-cols-2 gap-2">
                                         <div>
-                                          <span className="mb-0.5 block text-[10px] font-medium text-gray-500">Price (USD)</span>
-                                          <input
-                                            type="number"
-                                            min={0}
-                                            step="0.01"
-                                            value={item.controller1Price ?? ''}
-                                            onChange={(e) => {
-                                              const val = parseFloat(e.target.value);
-                                              updateCartItem(item.cartItemId, {
-                                                controller1Price: isNaN(val) || val < 0 ? undefined : val,
-                                              });
-                                            }}
-                                            className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-xs text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                            placeholder="0.00"
-                                          />
+                                          <span className="mb-0.5 block text-[10px] font-medium text-gray-500">Price ({currencyInfo.code})</span>
+                                          <div className="relative">
+                                            <span className="absolute left-2 top-1.5 text-gray-500 text-xs">{currencyInfo.symbol}</span>
+                                            <input
+                                              type="number"
+                                              min={0}
+                                              step="0.01"
+                                              value={item.controller1Price !== undefined && item.controller1Price !== null ? Number(convertPrice(item.controller1Price).toFixed(2)) : ''}
+                                              onChange={(e) => {
+                                                const val = parseFloat(e.target.value);
+                                                const rate = convertPrice(1) || 1;
+                                                const basePrice = val / rate;
+                                                updateCartItem(item.cartItemId, {
+                                                  controller1Price: isNaN(val) || val < 0 ? undefined : basePrice,
+                                                });
+                                              }}
+                                              className="w-full rounded-md border border-gray-300 pl-6 pr-2 py-1.5 text-xs text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                              placeholder="0.00"
+                                            />
+                                          </div>
                                         </div>
                                         <div>
                                           <span className="mb-0.5 block text-[10px] font-medium text-gray-500">Quantity</span>
@@ -3435,21 +3440,26 @@ export default function EnhancedCart() {
                                       </div>
                                       <div className="grid grid-cols-2 gap-2">
                                         <div>
-                                          <span className="mb-0.5 block text-[10px] font-medium text-gray-500">Price (USD)</span>
-                                          <input
-                                            type="number"
-                                            min={0}
-                                            step="0.01"
-                                            value={item.controller2Price ?? ''}
-                                            onChange={(e) => {
-                                              const val = parseFloat(e.target.value);
-                                              updateCartItem(item.cartItemId, {
-                                                controller2Price: isNaN(val) || val < 0 ? undefined : val,
-                                              });
-                                            }}
-                                            className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-xs text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                            placeholder="0.00"
-                                          />
+                                          <span className="mb-0.5 block text-[10px] font-medium text-gray-500">Price ({currencyInfo.code})</span>
+                                          <div className="relative">
+                                            <span className="absolute left-2 top-1.5 text-gray-500 text-xs">{currencyInfo.symbol}</span>
+                                            <input
+                                              type="number"
+                                              min={0}
+                                              step="0.01"
+                                              value={item.controller2Price !== undefined && item.controller2Price !== null ? Number(convertPrice(item.controller2Price).toFixed(2)) : ''}
+                                              onChange={(e) => {
+                                                const val = parseFloat(e.target.value);
+                                                const rate = convertPrice(1) || 1;
+                                                const basePrice = val / rate;
+                                                updateCartItem(item.cartItemId, {
+                                                  controller2Price: isNaN(val) || val < 0 ? undefined : basePrice,
+                                                });
+                                              }}
+                                              className="w-full rounded-md border border-gray-300 pl-6 pr-2 py-1.5 text-xs text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                              placeholder="0.00"
+                                            />
+                                          </div>
                                         </div>
                                         <div>
                                           <span className="mb-0.5 block text-[10px] font-medium text-gray-500">Quantity</span>

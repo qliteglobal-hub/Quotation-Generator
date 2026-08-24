@@ -4,6 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+const CITIES = {
+  'India': ['Delhi', 'Bangalore', 'Mumbai', 'Hyderabad', 'Custom'],
+  'Middle East': ['UAE', 'Bahrain', 'Qatar', 'Custom'],
+};
+
 export default function RegisterPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -15,6 +20,7 @@ export default function RegisterPage() {
     role: "",
     country: "",
     city: "",
+    customCity: "",
     password: "",
     confirmPassword: "",
   });
@@ -35,6 +41,7 @@ export default function RegisterPage() {
       !formData.role ||
       !formData.country ||
       !formData.city ||
+      (formData.city === 'Custom' && !formData.customCity) ||
       !formData.password ||
       !formData.confirmPassword
     ) {
@@ -67,7 +74,7 @@ export default function RegisterPage() {
           department: formData.department,
           role: formData.role,
           country: formData.country,
-          city: formData.city,
+          city: formData.city === 'Custom' ? formData.customCity || '' : formData.city,
         }),
       });
 
@@ -206,16 +213,19 @@ export default function RegisterPage() {
               <select
                 id="country"
                 value={formData.country}
-                onChange={(e) =>
-                  setFormData({ ...formData, country: e.target.value, city: "" })
-                }
+                onChange={(e) => {
+                  setFormData({ 
+                    ...formData, 
+                    country: e.target.value,
+                    city: '' 
+                  });
+                }}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
               >
-                <option value="">Select country</option>
-                <option value="india">India</option>
-                <option value="uae">UAE</option>
-                <option value="usa">USA</option>
+                <option value="">Select Country</option>
+                <option value="India">India</option>
+                <option value="Middle East">Middle East</option>
               </select>
             </div>
 
@@ -227,34 +237,29 @@ export default function RegisterPage() {
                 id="city"
                 value={formData.city}
                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
                 disabled={!formData.country}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
               >
-                <option value="">Select city</option>
-                {formData.country === "india" && (
-                  <>
-                    <option value="mumbai">Mumbai</option>
-                    <option value="delhi">Delhi</option>
-                    <option value="bangalore">Bangalore</option>
-                    <option value="chennai">Chennai</option>
-                  </>
-                )}
-                {formData.country === "uae" && (
-                  <>
-                    <option value="dubai">Dubai</option>
-                    <option value="abu_dhabi">Abu Dhabi</option>
-                    <option value="sharjah">Sharjah</option>
-                  </>
-                )}
-                {formData.country === "usa" && (
-                  <>
-                    <option value="new_york">New York</option>
-                    <option value="los_angeles">Los Angeles</option>
-                    <option value="chicago">Chicago</option>
-                  </>
-                )}
+                <option value="">Select City/Territory</option>
+                {formData.country && CITIES[formData.country as keyof typeof CITIES]?.map(city => (
+                  <option key={city} value={city}>{city}</option>
+                ))}
               </select>
+
+              {formData.city === 'Custom' && (
+                <input
+                  type="text"
+                  placeholder="Enter your city/territory"
+                  value={formData.customCity || ''}
+                  onChange={(e) => setFormData({ 
+                    ...formData, 
+                    customCity: e.target.value 
+                  })}
+                  required
+                  className="w-full mt-2 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                />
+              )}
             </div>
           </div>
 

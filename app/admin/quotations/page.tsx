@@ -34,6 +34,34 @@ export default function AdminQuotationsPage() {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await fetch('/api/admin/quotations', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      });
+      if (res.ok) {
+        setQuotations(prev => prev.filter(q => q._id !== id));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    if (session?.user?.role === 'admin') {
+      fetch('/api/admin/quotations/cleanup', { 
+        method: 'DELETE' 
+      }).then(res => res.json())
+        .then(data => {
+          if (data.deleted > 0) {
+            console.log(`Auto-cleaned ${data.deleted} old quotations`);
+          }
+        }).catch(console.error);
+    }
+  }, [session]);
+
   useEffect(() => {
     if (status === "loading") return;
 
@@ -93,6 +121,7 @@ export default function AdminQuotationsPage() {
                 <th className="px-4 py-2 text-left font-semibold text-gray-700">User Name</th>
                 <th className="px-4 py-2 text-left font-semibold text-gray-700">User Role</th>
                 <th className="px-4 py-2 text-left font-semibold text-gray-700">Created At</th>
+                <th className="px-4 py-2 text-left font-semibold text-gray-700">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -113,6 +142,19 @@ export default function AdminQuotationsPage() {
                   </td>
                   <td className="px-4 py-2 text-gray-500 text-xs">
                     {q.createdAt ? new Date(q.createdAt).toLocaleString('en-GB') : "-"}
+                  </td>
+                  <td className="px-4 py-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (confirm('Delete this quotation?')) {
+                          handleDelete(q._id);
+                        }
+                      }}
+                      className="text-red-500 hover:text-red-700 text-xs cursor-pointer px-2 py-1 rounded hover:bg-red-50 transition-all"
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}
