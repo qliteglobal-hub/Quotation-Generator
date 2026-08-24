@@ -65,6 +65,21 @@ export default function AdminUsersPage() {
     }
   };
 
+  const handleRoleChange = async (userId: string, newRole: string) => {
+    try {
+      await fetch('/api/admin/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, role: newRole }),
+      });
+      setUsers(prev => prev.map(u => 
+        u._id === userId ? { ...u, role: newRole } : u
+      ));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const filteredUsers = users.filter(u => filter === "all" || u.status === filter || (!u.status && filter === "pending"));
 
   if (loading || status === "loading") return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -106,7 +121,12 @@ export default function AdminUsersPage() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">City/Territory</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                    <p className="text-xs text-gray-400 font-normal">
+                      Click to change
+                    </p>
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -123,28 +143,55 @@ export default function AdminUsersPage() {
                         user.role === 'manager' ? 'bg-purple-100 text-purple-800' :
                         'bg-gray-100 text-gray-800'
                       }`}>
-                        {user.role || 'user'}
+                        {user.role === 'admin' ? '🔑 Admin' : user.role === 'manager' ? '👤 Manager' : '👤 User'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
-                      {user.status === "approved" && <span className="inline-flex items-center gap-1 text-green-600 text-xs font-semibold bg-green-50 px-2 py-1 rounded-full"><CheckCircle size={14}/> Approved</span>}
-                      {(!user.status || user.status === "pending") && <span className="inline-flex items-center gap-1 text-yellow-600 text-xs font-semibold bg-yellow-50 px-2 py-1 rounded-full"><Clock size={14}/> Pending</span>}
-                      {user.status === "rejected" && <span className="inline-flex items-center gap-1 text-red-600 text-xs font-semibold bg-red-50 px-2 py-1 rounded-full"><XCircle size={14}/> Rejected</span>}
+                      {user.status === "approved" && <span className="inline-flex items-center gap-1 text-green-700 text-xs font-bold bg-green-50 px-3 py-1.5 rounded-full">✅ Active</span>}
+                      {(!user.status || user.status === "pending") && <span className="inline-flex items-center gap-1 text-yellow-700 text-xs font-bold bg-yellow-50 px-3 py-1.5 rounded-full">⏳ Pending Approval</span>}
+                      {user.status === "rejected" && <span className="inline-flex items-center gap-1 text-red-700 text-xs font-bold bg-red-50 px-3 py-1.5 rounded-full">🚫 Access Blocked</span>}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                       <div className="flex items-center justify-end gap-2">
-                        {user.status !== "approved" && (
+                        {(!user.status || user.status === "pending") && (
+                          <>
+                            <button onClick={() => handleUpdateStatus(user._id, "approved")} className="text-green-600 hover:text-green-900 font-semibold px-2 py-1">Approve</button>
+                            <button onClick={() => handleUpdateStatus(user._id, "rejected")} className="text-red-600 hover:text-red-900 font-semibold px-2 py-1">Reject</button>
+                          </>
+                        )}
+                        
+                        {user.status === "approved" && (
+                          <>
+                            <button onClick={() => handleUpdateStatus(user._id, "rejected")} className="text-red-600 hover:text-red-900 font-semibold px-2 py-1">Reject</button>
+                            {user.role === 'admin' ? (
+                              <button
+                                onClick={() => {
+                                  if (confirm('Remove admin access from this user?')) {
+                                    handleRoleChange(user._id, 'user');
+                                  }
+                                }}
+                                className="text-orange-500 hover:text-orange-700 text-xs cursor-pointer px-2 py-1 rounded hover:bg-orange-50 transition-all"
+                              >
+                                Remove Admin
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => {
+                                  if (confirm('Give admin access to this user?')) {
+                                    handleRoleChange(user._id, 'admin');
+                                  }
+                                }}
+                                className="text-blue-500 hover:text-blue-700 text-xs cursor-pointer px-2 py-1 rounded hover:bg-blue-50 transition-all"
+                              >
+                                Make Admin
+                              </button>
+                            )}
+                          </>
+                        )}
+
+                        {user.status === "rejected" && (
                           <button onClick={() => handleUpdateStatus(user._id, "approved")} className="text-green-600 hover:text-green-900 font-semibold px-2 py-1">Approve</button>
                         )}
-                        {user.status !== "rejected" && (
-                          <button onClick={() => handleUpdateStatus(user._id, "rejected")} className="text-red-600 hover:text-red-900 font-semibold px-2 py-1">Reject</button>
-                        )}
-                        <button
-                          onClick={() => handleUpdateStatus(user._id, 'rejected')}
-                          className="text-red-500 hover:text-red-700 text-xs cursor-pointer px-2 py-1 rounded hover:bg-red-50"
-                        >
-                          Remove Access
-                        </button>
                       </div>
                     </td>
                   </tr>

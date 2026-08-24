@@ -28,13 +28,17 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { userId, status } = await req.json();
-    if (!userId || !status) {
+    const { userId, status, role } = await req.json();
+    if (!userId || (!status && !role)) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
 
     await dbConnect();
-    const updatedUser = await User.findByIdAndUpdate(userId, { status }, { new: true });
+    const updateData: any = {};
+    if (status) updateData.status = status;
+    if (role) updateData.role = role;
+
+    const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
     
     if (!updatedUser) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
