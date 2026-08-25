@@ -26,6 +26,11 @@ const ProductSchema = new mongoose.Schema(
     accessories: { type: String, default: '' },
     finish: { type: String, default: '' },
     reflectorFinish: { type: String, default: '' },
+    territory: { 
+      type: String, 
+      enum: ['India', 'Middle East', 'Both'],
+      default: 'Middle East'
+    },
     // IP ratings with individual prices (stored in USD): [{ rating: "IP20", price: 59.00 }, { rating: "IP30", price: 120.00 }]
     // Price is optional - can be null/0 if not yet determined
     ipRatings: { 

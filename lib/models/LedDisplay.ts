@@ -12,6 +12,11 @@ const LedDisplaySchema = new mongoose.Schema(
     totalResolution: { type: String }, // e.g., "1920x1080"
     sqft: { type: Number }, // Square feet
     price: { type: Number, default: 0 }, // Base price in USD
+    territory: { 
+      type: String, 
+      enum: ['India', 'Middle East', 'Both'],
+      default: 'Middle East'
+    },
     
     // Cabinet Material Variants (for displays with same specs but different materials)
     cabinetMaterialVariants: [{

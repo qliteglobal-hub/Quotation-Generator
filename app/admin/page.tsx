@@ -25,6 +25,7 @@ interface Product {
   category: string;
   categoryFilter?: string; // Main category for filtering
   description?: string; // Product description
+  territory?: string;
   application?: string;
 
   watt?: number;
@@ -1786,6 +1787,23 @@ export default function AdminDashboard() {
                         <p className="text-sm text-gray-600 mt-2">Uploading file...</p>
                       </div>
                     )}
+                  </div>
+                </div>
+
+                <div className="mt-6 border-t pt-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Territory</label>
+                    <select
+                      value={formData.territory || 'Middle East'}
+                      onChange={(e) => setFormData({
+                        ...formData, territory: e.target.value
+                      })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+                    >
+                      <option value="Middle East">Middle East</option>
+                      <option value="India">India</option>
+                      <option value="Both">Both</option>
+                    </select>
                   </div>
                 </div>
 

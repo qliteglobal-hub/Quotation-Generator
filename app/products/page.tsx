@@ -33,6 +33,7 @@ type Product = {
   name?: string; // Made optional for lighting controls
   category: string;
   categoryFilter?: string;
+  territory?: string;
   application?: string;
 
   watt?: number;
@@ -220,6 +221,7 @@ export default function ProductsPage() {
   const [showFilters, setShowFilters] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [selectedTerritory, setSelectedTerritory] = useState<string>('All');
 
   // Initialize theme from localStorage so cart page can share the same theme
   useEffect(() => {
@@ -523,6 +525,11 @@ export default function ProductsPage() {
     });
   }
 
+  // Filter by territory
+  if (selectedTerritory !== 'All') {
+    displayProducts = displayProducts.filter(p => p.territory === selectedTerritory || p.territory === 'Both');
+  }
+
   // Pagination calculations
   const totalPages = Math.ceil(displayProducts.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -658,7 +665,28 @@ export default function ProductsPage() {
              <Package className="w-4 h-4" />
             Lighting Controls 
             </button>
-          </div>       
+          </div>
+          
+          {/* Territory Filter */}
+          <div className="flex gap-2 mt-4">
+            {['All', 'India', 'Middle East'].map(territory => (
+              <button
+                key={territory}
+                onClick={() => { setSelectedTerritory(territory); setCurrentPage(1); }}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+                  selectedTerritory === territory
+                    ? isDarkMode
+                      ? 'bg-blue-600 text-white border border-blue-500'
+                      : 'bg-blue-600 text-white'
+                    : isDarkMode
+                      ? 'bg-white/5 hover:bg-white/10 text-gray-400 border border-white/10'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border border-transparent'
+                }`}
+              >
+                {territory}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Continuous  Banner */}

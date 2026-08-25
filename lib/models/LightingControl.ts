@@ -10,6 +10,11 @@ const LightingControlSchema = new mongoose.Schema(
     productCode: { type: String }, // Made optional since SKU serves the same purpose
     productName: { type: String, required: true }, // Product name for display
     description: { type: String },
+    territory: { 
+      type: String, 
+      enum: ['India', 'Middle East', 'Both'],
+      default: 'Middle East'
+    },
     
     // Price variants based on specifications
     priceVariants: [{
