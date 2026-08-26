@@ -3,6 +3,7 @@ import dbConnect from "@/lib/mongodb";
 import User from "@/lib/models/User";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import bcrypt from "bcryptjs";
 
 export async function GET() {
   try {
@@ -28,8 +29,8 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { userId, status, role } = await req.json();
-    if (!userId || (!status && !role)) {
+    const { userId, status, role, newPassword } = await req.json();
+    if (!userId || (!status && !role && !newPassword)) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
 
@@ -47,6 +48,9 @@ export async function PATCH(req: Request) {
     const updateData: any = {};
     if (status) updateData.status = status;
     if (role) updateData.role = role;
+    if (newPassword) {
+      updateData.password = await bcrypt.hash(newPassword, 12);
+    }
 
     const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
 

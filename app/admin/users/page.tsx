@@ -80,6 +80,33 @@ export default function AdminUsersPage() {
     }
   };
 
+  const handleResetPassword = async (userId: string) => {
+    const newPassword = prompt("Enter the new temporary password for this user:");
+    if (!newPassword) return;
+    
+    if (newPassword.length < 6) {
+      alert("Password must be at least 6 characters.");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/admin/users", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, newPassword }),
+      });
+      if (res.ok) {
+        alert("Password reset successfully!");
+      } else {
+        const errorData = await res.json();
+        alert(errorData.error || "Failed to reset password");
+      }
+    } catch (error) {
+      console.error("Failed to reset password", error);
+      alert("An error occurred while resetting the password");
+    }
+  };
+
   const filteredUsers = users.filter(u => filter === "all" || u.status === filter || (!u.status && filter === "pending"));
 
   if (loading || status === "loading") return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -195,6 +222,14 @@ export default function AdminUsersPage() {
                           {user.status === "rejected" && (
                             <button onClick={() => handleUpdateStatus(user._id, "approved")} className="text-green-600 hover:text-green-900 font-semibold px-2 py-1">Approve</button>
                           )}
+                          
+                          <button
+                            onClick={() => handleResetPassword(user._id)}
+                            className="text-gray-500 hover:text-gray-900 text-xs cursor-pointer px-2 py-1 rounded hover:bg-gray-100 transition-all font-semibold"
+                            title="Reset Password"
+                          >
+                            Reset Password
+                          </button>
                         </div>
                       )}
                     </td>
