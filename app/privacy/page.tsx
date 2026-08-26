@@ -204,9 +204,9 @@ export default function PrivacyPolicyPage() {
                 If you have any questions about this Privacy Policy or wish to exercise your rights, please contact us:
               </p>
               <div className={`mt-4 space-y-2 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                <p><strong>Email:</strong> sales@qliteglobal.com</p>
-                <p><strong>Phone:</strong> +973 3330 8969</p>
-                <p><strong>Address:</strong> QLITE CO. WLL, P.O. Box: 1858, Manama, Kingdom of Bahrain</p>
+                <p><span className="font-semibold">Email:</span> sales@qliteglobal.com</p>
+                <p><span className="font-semibold">Phone:</span> +973 3330 8969</p>
+                <p><span className="font-semibold">Address:</span> QLITE CO. WLL, P.O. Box: 1858, Manama, Kingdom of Bahrain</p>
               </div>
             </section>
           </div>
