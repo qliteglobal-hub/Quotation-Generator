@@ -23,6 +23,10 @@ export const authOptions: NextAuthOptions = {
         const user = await User.findOne({ email: credentials.email });
         if (!user) throw new Error("Invalid email or password");
 
+        if (!user.emailVerified) {
+          throw new Error('Please verify your email before logging in.');
+        }
+
         if (user.status === 'pending' || user.status === 'rejected') {
           throw new Error('Your account is pending admin approval.');
         }
