@@ -78,6 +78,7 @@ export default function LedDisplaysAdmin() {
   const [formData, setFormData] = useState<Partial<LedDisplay>>({});
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [territoryFilter, setTerritoryFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(20);
 
@@ -188,11 +189,15 @@ export default function LedDisplaysAdmin() {
   };
 
   // Filter and pagination
-  const filteredDisplays = displays.filter(display =>
-    display.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const filteredDisplays = displays.filter(display => {
+    if (territoryFilter !== "All" && display.territory !== territoryFilter && display.territory !== "Both") return false;
+    
+    if (!searchTerm) return true;
+    
+    return display.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     display.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    display.application?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    display.application?.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   const totalPages = Math.ceil(filteredDisplays.length / itemsPerPage);
   const paginatedDisplays = filteredDisplays.slice(
@@ -262,18 +267,33 @@ export default function LedDisplaysAdmin() {
 
         {/* Search */}
         <div className="mb-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search displays..."
-              value={searchTerm}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search displays..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="w-full pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+              />
+            </div>
+            
+            <select
+              value={territoryFilter}
               onChange={(e) => {
-                setSearchTerm(e.target.value);
+                setTerritoryFilter(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-            />
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 bg-white text-gray-700 font-medium"
+            >
+              <option value="All">All Territories</option>
+              <option value="Middle East">Middle East</option>
+              <option value="India">India</option>
+            </select>
           </div>
         </div>
 

@@ -48,6 +48,7 @@ export default function LightingControlsAdmin() {
   const [formData, setFormData] = useState<Partial<LightingControl>>({});
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [territoryFilter, setTerritoryFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(20);
 
@@ -142,11 +143,15 @@ export default function LightingControlsAdmin() {
   };
 
   // Filter and pagination
-  const filteredControls = controls.filter(control =>
-    control.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const filteredControls = controls.filter(control => {
+    if (territoryFilter !== "All" && control.territory !== territoryFilter && control.territory !== "Both") return false;
+    
+    if (!searchTerm) return true;
+    
+    return control.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     control.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    control.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    control.description?.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   const totalPages = Math.ceil(filteredControls.length / itemsPerPage);
   const paginatedControls = filteredControls.slice(
@@ -184,18 +189,33 @@ export default function LightingControlsAdmin() {
 
         {/* Search */}
         <div className="mb-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search controls..."
-              value={searchTerm}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search controls..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="w-full pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+              />
+            </div>
+            
+            <select
+              value={territoryFilter}
               onChange={(e) => {
-                setSearchTerm(e.target.value);
+                setTerritoryFilter(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-            />
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 bg-white text-gray-700 font-medium"
+            >
+              <option value="All">All Territories</option>
+              <option value="Middle East">Middle East</option>
+              <option value="India">India</option>
+            </select>
           </div>
         </div>
 

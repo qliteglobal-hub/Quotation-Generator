@@ -95,6 +95,7 @@ export default function AdminDashboard() {
   
   // Pagination and search states
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [territoryFilter, setTerritoryFilter] = useState<string>("All");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage] = useState<number>(20);
   const [submitting, setSubmitting] = useState<boolean>(false);
@@ -179,10 +180,16 @@ export default function AdminDashboard() {
 
   // Filtered and paginated products - search across all specifications
   const filteredProducts = useMemo(() => {
-    if (!searchTerm.trim()) return products;
+    let result = products;
+    
+    if (territoryFilter !== "All") {
+      result = result.filter(p => p.territory === territoryFilter || p.territory === "Both");
+    }
+
+    if (!searchTerm.trim()) return result;
     
     const term = searchTerm.toLowerCase();
-    return products.filter(p => {
+    return result.filter(p => {
       // Search in basic fields
       if (p.sku?.toLowerCase().includes(term)) return true;
       if (p.category?.toLowerCase().includes(term)) return true;
@@ -206,7 +213,7 @@ export default function AdminDashboard() {
       
       return false;
     });
-  }, [products, searchTerm]);
+  }, [products, searchTerm, territoryFilter]);
 
   const paginatedProducts = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -754,18 +761,27 @@ export default function AdminDashboard() {
 
         {/* Search Bar */}
         <div className="mb-6 bg-white rounded-lg shadow p-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-            <input
-              type="text"
-              placeholder="Search by SKU, category, wattage, lumen, IP rating, price, or any specification..."
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1); // Reset to first page on search
-              }}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
-            />
+          <div className="flex flex-col sm:flex-row gap-4 flex-1">
+            <div className="relative flex-1 max-w-md">
+              <input
+                type="text"
+                placeholder="Search products by SKU, category, specs..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
+            </div>
+            
+            <select
+              value={territoryFilter}
+              onChange={(e) => setTerritoryFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-700 font-medium"
+            >
+              <option value="All">All Territories</option>
+              <option value="Middle East">Middle East</option>
+              <option value="India">India</option>
+            </select>
           </div>
           {searchTerm && (
             <p className="mt-2 text-sm text-gray-600">
