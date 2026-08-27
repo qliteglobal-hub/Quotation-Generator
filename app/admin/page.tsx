@@ -100,6 +100,8 @@ export default function AdminDashboard() {
   const [itemsPerPage] = useState<number>(20);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [newVariant, setNewVariant] = useState({ watt: '', lumen: '', dimension: '' });
+  const [editingWattageIndex, setEditingWattageIndex] = useState<number | null>(null);
+  const [editingIpIndex, setEditingIpIndex] = useState<number | null>(null);
   
   // Inline editing states
   const [editingPrice, setEditingPrice] = useState<{productId: string, ipIndex: number} | null>(null);
@@ -1196,19 +1198,33 @@ export default function AdminDashboard() {
                         onClick={() => {
                           if (!newVariant.watt) return;
                           const current = formData.wattageVariants || [];
-                          setFormData({
-                            ...formData,
-                            wattageVariants: [...current, {
+                          
+                          if (editingWattageIndex !== null) {
+                            // Update existing variant
+                            const updated = [...current];
+                            updated[editingWattageIndex] = {
                               watt: Number(newVariant.watt),
                               lumen: newVariant.lumen,
                               dimension: newVariant.dimension
-                            }]
-                          });
+                            };
+                            setFormData({ ...formData, wattageVariants: updated });
+                            setEditingWattageIndex(null);
+                          } else {
+                            // Add new variant
+                            setFormData({
+                              ...formData,
+                              wattageVariants: [...current, {
+                                watt: Number(newVariant.watt),
+                                lumen: newVariant.lumen,
+                                dimension: newVariant.dimension
+                              }]
+                            });
+                          }
                           setNewVariant({ watt: '', lumen: '', dimension: '' });
                         }}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 cursor-pointer"
+                        className={`px-4 py-2 text-white rounded-lg text-sm font-medium cursor-pointer ${editingWattageIndex !== null ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'}`}
                       >
-                        Add
+                        {editingWattageIndex !== null ? 'Update' : 'Add'}
                       </button>
                     </div>
 
@@ -1226,16 +1242,38 @@ export default function AdminDashboard() {
                             <span className="text-sm text-gray-700">{v.watt}W</span>
                             <span className="text-sm text-gray-700">{v.lumen || '-'}</span>
                             <span className="text-sm text-gray-700">{v.dimension || '-'}</span>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const updated = (formData.wattageVariants || []).filter((_: any, i: number) => i !== idx);
-                                setFormData({...formData, wattageVariants: updated});
-                              }}
-                              className="text-red-500 hover:text-red-700 text-xs cursor-pointer justify-self-end"
-                            >
-                              ✕ Remove
-                            </button>
+                            <div className="flex gap-3 justify-end">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setNewVariant({
+                                    watt: v.watt.toString(),
+                                    lumen: v.lumen || '',
+                                    dimension: v.dimension || ''
+                                  });
+                                  setEditingWattageIndex(idx);
+                                }}
+                                className="text-blue-500 hover:text-blue-700 text-xs cursor-pointer"
+                              >
+                                ✎ Edit
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const updated = (formData.wattageVariants || []).filter((_: any, i: number) => i !== idx);
+                                  setFormData({...formData, wattageVariants: updated});
+                                  if (editingWattageIndex === idx) {
+                                    setEditingWattageIndex(null);
+                                    setNewVariant({ watt: '', lumen: '', dimension: '' });
+                                  } else if (editingWattageIndex !== null && editingWattageIndex > idx) {
+                                    setEditingWattageIndex(editingWattageIndex - 1);
+                                  }
+                                }}
+                                className="text-red-500 hover:text-red-700 text-xs cursor-pointer"
+                              >
+                                ✕ Remove
+                              </button>
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -1497,10 +1535,33 @@ export default function AdminDashboard() {
                       />
                       <button
                         type="button"
-                        onClick={handleAddIpRating}
-                        className="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900"
+                        onClick={() => {
+                          if (!newIpRating) return;
+                          
+                          let trimmed = newIpRating.trim().toUpperCase();
+                          const priceValue = parseFloat(newIpPrice);
+                          
+                          if (!trimmed.startsWith("IP") && !isNaN(Number(trimmed))) {
+                            trimmed = `IP${trimmed}`;
+                          }
+                          
+                          if (editingIpIndex !== null) {
+                            // Update existing
+                            const updated = [...ipRatings];
+                            updated[editingIpIndex] = { rating: trimmed, price: isNaN(priceValue) ? 0 : priceValue };
+                            setIpRatings(updated);
+                            setEditingIpIndex(null);
+                          } else {
+                            // Add new
+                            setIpRatings([...ipRatings, { rating: trimmed, price: isNaN(priceValue) ? 0 : priceValue }]);
+                          }
+                          
+                          setNewIpRating("");
+                          setNewIpPrice("");
+                        }}
+                        className={`px-4 py-2 text-white rounded-lg ${editingIpIndex !== null ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-800 hover:bg-gray-900'}`}
                       >
-                        Add
+                        {editingIpIndex !== null ? 'Update' : 'Add'}
                       </button>
                     </div>
                     <p className="text-xs text-gray-500 mt-1">
@@ -1518,13 +1579,37 @@ export default function AdminDashboard() {
                               <span className="text-sm font-medium text-blue-900">{ip.rating}</span>
                               <span className="text-xs text-blue-700">{ip.price > 0 ? `₹${ip.price.toFixed(2)}` : 'TBD'}</span>
                             </div>
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveIpRating(idx)}
-                              className="text-red-600 hover:text-red-700"
-                            >
-                              <X size={16} />
-                            </button>
+                            <div className="flex items-center gap-1 ml-2">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setNewIpRating(ip.rating.replace('IP', ''));
+                                  setNewIpPrice(ip.price > 0 ? ip.price.toString() : '');
+                                  setEditingIpIndex(idx);
+                                }}
+                                className="text-blue-600 hover:text-blue-800 p-1"
+                                title="Edit"
+                              >
+                                ✎
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  handleRemoveIpRating(idx);
+                                  if (editingIpIndex === idx) {
+                                    setEditingIpIndex(null);
+                                    setNewIpRating("");
+                                    setNewIpPrice("");
+                                  } else if (editingIpIndex !== null && editingIpIndex > idx) {
+                                    setEditingIpIndex(editingIpIndex - 1);
+                                  }
+                                }}
+                                className="text-red-600 hover:text-red-700 p-1"
+                                title="Remove"
+                              >
+                                <X size={16} />
+                              </button>
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -1827,7 +1912,7 @@ export default function AdminDashboard() {
                   <button
                     type="button"
                     onClick={handleCloseModal}
-                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 font-medium"
                   >
                     Cancel
                   </button>
