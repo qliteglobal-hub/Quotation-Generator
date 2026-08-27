@@ -42,7 +42,7 @@ export default function ForgotPasswordPage() {
             <p className="text-gray-500 text-sm mt-1">
               Check your email inbox
             </p>
-            <Link href="/login" 
+            <Link href="/login"
               className="mt-4 inline-block text-blue-600 hover:underline text-sm">
               Back to Login
             </Link>

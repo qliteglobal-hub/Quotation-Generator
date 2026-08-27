@@ -38,11 +38,11 @@ function LoginForm() {
       } else {
         // Wait a bit for session to be set, then fetch it
         await new Promise(resolve => setTimeout(resolve, 500));
-        
+
         // Get the session to check user role
         const response = await fetch("/api/auth/session");
         const session = await response.json();
-        
+
         // Redirect based on role
         if (session?.user?.role === "admin") {
           window.location.href = "/admin";
@@ -114,7 +114,7 @@ function LoginForm() {
           </div>
 
           <div className="text-right mt-1">
-            <Link href="/forgot-password" 
+            <Link href="/forgot-password"
               className="text-sm text-blue-600 hover:underline">
               Forgot Password?
             </Link>
