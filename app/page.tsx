@@ -85,7 +85,7 @@ export default function HomePage() {
               {/* Main Heading */}
               <div className="inline-block transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.02]">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold mb-3 leading-tight tracking-tight">
-                  <span className="text-white block">Create Quotations</span>
+                  <span className="text-white block">Create testing quotation</span>
                   <span className="bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-500 bg-clip-text text-transparent">
                     In Minutes, Not Hours
                   </span>
