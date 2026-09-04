@@ -28,7 +28,7 @@ export async function POST(request: Request) {
       // Determine application based on available IP rating data
       if (product.ipRatings && product.ipRatings.length > 0) {
         // New structure with individual prices
-        newApplication = getApplicationFromIpRatings(product.ipRatings);
+        newApplication = getApplicationFromIpRatings(product.ipRatings as any);
       } else if (product.ipRating && product.ipRating.length > 0) {
         // Legacy structure
         newApplication = getApplicationFromIpRating(product.ipRating);
