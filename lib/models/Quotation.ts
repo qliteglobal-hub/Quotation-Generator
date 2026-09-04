@@ -16,7 +16,7 @@ const quotationSchema = new mongoose.Schema({
       quantity: { type: Number, default: 1 },
       unitPrice: { type: Number, default: 0 },
       totalPrice: { type: Number, default: 0 },
-      watt: { type: Number },
+      watt: { type: mongoose.Schema.Types.Mixed },
       lumen: { type: String },
       beamAngle: { type: String },
       ipRating: { type: String },

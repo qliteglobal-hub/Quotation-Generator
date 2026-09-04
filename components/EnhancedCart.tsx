@@ -570,7 +570,7 @@ export default function EnhancedCart() {
   const generateProjectDescription = (item: CartItem): string => {
     const parts = [];
 
-    if (item.watt) parts.push(`${item.watt}W`);
+    if (item.watt) parts.push(`${item.watt}${String(item.watt).toUpperCase().includes('W') ? '' : 'W'}`);
     if (item.category) parts.push(item.category);
 
     const details = [];
@@ -848,7 +848,7 @@ export default function EnhancedCart() {
           const specText = parts.join(' | ');
 
           const driverLabel = item.name
-            ? `${item.name}${item.wattage && item.wattage !== 'N/A' ? ' - ' + item.wattage + (String(item.wattage).toUpperCase().endsWith('W') ? '' : 'W') : ''}`
+            ? `${item.name}${item.wattage && item.wattage !== 'N/A' ? ' - ' + item.wattage + (String(item.wattage).toUpperCase().includes('W') ? '' : 'W') : ''}`
             : item.sku ?? 'Driver';
 
           if (hasOnlyLightingControlsExcel) {
@@ -988,7 +988,7 @@ export default function EnhancedCart() {
           };
 
           addSpec('Category: ', item.category);
-          addSpec('Wattage: ', item.watt ? item.watt + 'W' : null);
+          addSpec('Wattage: ', item.watt ? item.watt + (String(item.watt).toUpperCase().includes('W') ? '' : 'W') : null);
           addSpec('Dimension: ', (item as any).dimension);
           addSpec('Beam Angle: ', (item as any).beamAngle);
           addSpec('Lumen: ', (item as any).lumen);
@@ -2613,7 +2613,7 @@ export default function EnhancedCart() {
           };
 
           pushSpec('Category', item.category);
-          pushSpec('Wattage', item.watt ? item.watt + 'W' : null);
+          pushSpec('Wattage', item.watt ? item.watt + (String(item.watt).toUpperCase().includes('W') ? '' : 'W') : null);
           pushSpec('Dimension', item.dimension);
           pushSpec('Beam Angle', item.beamAngle);
           pushSpec('Lumen', item.lumen);
@@ -2652,7 +2652,7 @@ export default function EnhancedCart() {
             const allSpecs = driverSpecs.join(' | ');
 
             const driverLabel = item.name
-              ? `${item.name}${item.wattage && item.wattage !== 'N/A' ? ' - ' + item.wattage + (String(item.wattage).toUpperCase().endsWith('W') ? '' : 'W') : ''}`
+              ? `${item.name}${item.wattage && item.wattage !== 'N/A' ? ' - ' + item.wattage + (String(item.wattage).toUpperCase().includes('W') ? '' : 'W') : ''}`
               : item.sku ?? 'Driver';
 
             // Different format for lighting control drivers vs LED light drivers
@@ -3641,7 +3641,7 @@ export default function EnhancedCart() {
                                       )}
                                     </div>
                                     <h3 className="font-bold text-xs mb-0.5 truncate text-white">
-                                      {item.name || item.sku}{item.wattage && item.wattage !== 'N/A' ? ` - ${item.wattage}${String(item.wattage).toUpperCase().endsWith('W') ? '' : 'W'}` : ''}
+                                      {item.name || item.sku}{item.wattage && item.wattage !== 'N/A' ? ` - ${item.wattage}${String(item.wattage).toUpperCase().includes('W') ? '' : 'W'}` : ''}
                                     </h3>
                                     {item.category && (
                                       <p className="text-[10px] text-slate-300">
@@ -3811,7 +3811,7 @@ export default function EnhancedCart() {
                                       )}
                                       {item.watt && item.watt !== '-' && (
                                         <span className="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
-                                          {item.watt}W
+                                          {item.watt}{String(item.watt).toUpperCase().includes('W') ? '' : 'W'}
                                         </span>
                                       )}
                                       {item.lumen && item.lumen !== '-' && (
@@ -3915,7 +3915,7 @@ export default function EnhancedCart() {
                                                 <div className="flex flex-wrap items-center gap-1 text-[9px] text-blue-800 font-medium">
                                                   {driver.wattage && driver.wattage !== 'N/A' && (
                                                     <span className="bg-white/60 px-1.5 py-0.5 rounded border border-blue-200/60">
-                                                      {driver.wattage}{String(driver.wattage).toUpperCase().endsWith('W') ? '' : 'W'}
+                                                      {driver.wattage}{String(driver.wattage).toUpperCase().includes('W') ? '' : 'W'}
                                                     </span>
                                                   )}
                                                   <span className="bg-white/60 px-1.5 py-0.5 rounded border border-blue-200/60">
@@ -6167,7 +6167,7 @@ export default function EnhancedCart() {
                 updateCartItem(editingCartItem.cartItemId, {
                   ...editingCartItem,
                   category: editSpecs.category,
-                  watt: editSpecs.watt ? Number(editSpecs.watt) : editingCartItem.watt,
+                  watt: editSpecs.watt || editingCartItem.watt,
                   lumen: editSpecs.lumen,
                   dimension: editSpecs.dimension,
                   beamAngle: editSpecs.beamAngle,
@@ -6326,7 +6326,7 @@ export default function EnhancedCart() {
                   updateCartItem(editingCartItem.cartItemId, {
                     ...editingCartItem,
                     category: editSpecs.category,
-                    watt: editSpecs.watt ? Number(editSpecs.watt) : editingCartItem.watt,
+                    watt: editSpecs.watt || editingCartItem.watt,
                     lumen: editSpecs.lumen,
                     dimension: editSpecs.dimension,
                     beamAngle: editSpecs.beamAngle,

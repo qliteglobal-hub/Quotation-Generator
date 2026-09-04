@@ -1921,7 +1921,7 @@ export default function ProductsPage() {
                               </select>
                             ) : (
                               <span className={`text-sm font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                                {p.watt ? `${p.watt}W` : '-'}
+                                {p.watt ? `${p.watt}${String(p.watt).toUpperCase().includes('W') ? '' : 'W'}` : '-' }
                               </span>
                             )}
                           </td>
@@ -2507,7 +2507,7 @@ export default function ProductsPage() {
               {[
                 { label: 'Category', value: selectedProduct.category },
                 { label: 'Application', value: selectedProduct.application },
-                { label: 'Wattage', value: selectedProduct.watt ? selectedProduct.watt + 'W' : null },
+                { label: 'Wattage', value: selectedProduct.watt ? selectedProduct.watt + (String(selectedProduct.watt).toUpperCase().includes('W') ? '' : 'W') : null },
                 { label: 'Lumen', value: selectedProduct.lumen },
                 { label: 'Beam Angle', value: selectedProduct.beamAngle },
                 { label: 'Dimension', value: selectedProduct.dimension },
@@ -2778,7 +2778,7 @@ export default function ProductsPage() {
                 const productToAdd = {
                   ...customizeProduct,
                   category: customSpecs.category || customizeProduct.category,
-                  watt: customSpecs.watt ? Number(customSpecs.watt) : customizeProduct.watt,
+                  watt: customSpecs.watt || customizeProduct.watt,
                   dimension: customSpecs.dimension || customizeProduct.dimension,
                   beamAngle: customSpecs.beamAngle || customizeProduct.beamAngle,
                   lumen: customSpecs.lumen || customizeProduct.lumen,
@@ -2834,7 +2834,7 @@ export default function ProductsPage() {
                   const productToAdd = {
                     ...customizeProduct,
                     category: customSpecs.category || customizeProduct.category,
-                    watt: customSpecs.watt ? Number(customSpecs.watt) : customizeProduct.watt,
+                    watt: customSpecs.watt || customizeProduct.watt,
                     lumen: customSpecs.lumen || customizeProduct.lumen,
                     dimension: customSpecs.dimension || customizeProduct.dimension,
                     beamAngle: customSpecs.beamAngle || customizeProduct.beamAngle,
