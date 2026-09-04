@@ -3961,9 +3961,16 @@ export default function EnhancedCart() {
                                             <div className="flex items-start justify-between mt-1 pt-1 border-t border-blue-200/50 gap-2">
                                               <div className="flex items-center gap-1 bg-white border border-blue-200 rounded-md p-0.5 shrink-0">
                                                 <button onClick={() => decreaseQuantity(driver.cartItemId)} className="w-5 h-5 flex items-center justify-center rounded hover:bg-gray-100 text-gray-700"><Minus className="w-3 h-3" /></button>
-                                                <span className="text-gray-900 font-bold text-xs min-w-[20px] text-center">
-                                                  {driver.quantity || 1}
-                                                </span>
+                                                <input
+                                                  type="number"
+                                                  min="1"
+                                                  value={driver.quantity || 1}
+                                                  onChange={(e) => {
+                                                    const value = parseInt(e.target.value) || 1;
+                                                    updateQuantity(driver.cartItemId, value);
+                                                  }}
+                                                  className="w-8 text-center font-bold text-xs outline-none bg-transparent text-gray-900"
+                                                />
                                                 <button onClick={() => increaseQuantity(driver.cartItemId)} className="w-5 h-5 flex items-center justify-center rounded hover:bg-gray-100 text-gray-700"><Plus className="w-3 h-3" /></button>
                                               </div>
                                               <div className="text-right flex-1 min-w-0">
@@ -5688,9 +5695,13 @@ export default function EnhancedCart() {
                     >
                       <Minus size={16} />
                     </button>
-                    <span className={`text-base font-semibold w-8 text-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                      {customDriverQuantity}
-                    </span>
+                    <input
+                      type="number"
+                      min="1"
+                      value={customDriverQuantity}
+                      onChange={(e) => setCustomDriverQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                      className={`text-base font-semibold w-16 text-center outline-none bg-transparent ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                    />
                     <button
                       onClick={() => setCustomDriverQuantity(customDriverQuantity + 1)}
                       className={`w-10 h-10 flex items-center justify-center rounded-lg transition-colors ${isDarkMode ? 'bg-gray-800 hover:bg-gray-700 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-900'

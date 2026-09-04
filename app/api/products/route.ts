@@ -66,6 +66,13 @@ export async function PUT(req: Request) {
     if (!id) return NextResponse.json({ error: "Product ID required" }, { status: 400 });
 
     const data = await req.json();
+    
+    // Clean up Mongoose fields to prevent update errors
+    delete data._id;
+    delete data.__v;
+    delete data.createdAt;
+    delete data.updatedAt;
+
     // Prices are stored in USD - round to 2 decimal places for consistency
     if (data.price) {
       data.price = Math.round(Number(data.price) * 100) / 100;
@@ -77,9 +84,18 @@ export async function PUT(req: Request) {
         price: Math.round(Number(ip.price || 0) * 100) / 100
       }));
     }
+    
+    // Explicitly handle wattageVariants to ensure they save correctly
+    if (data.wattageVariants && Array.isArray(data.wattageVariants)) {
+      data.wattageVariants = data.wattageVariants.map((v: any) => ({
+        ...v,
+        watt: Number(v.watt) || 0,
+        lumen: v.lumen || '',
+        dimension: v.dimension || ''
+      }));
+    }
 
-
-    const updatedProduct = await Product.findByIdAndUpdate(id, data, { new: true, runValidators: true });
+    const updatedProduct = await Product.findByIdAndUpdate(id, { $set: data }, { new: true, runValidators: true });
     if (!updatedProduct) return NextResponse.json({ error: "Product not found" }, { status: 404 });
 
     return NextResponse.json(updatedProduct);

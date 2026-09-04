@@ -1427,7 +1427,23 @@ export default function EnhancedCart() {
                             <div key={driver.cartItemId} className="flex items-center justify-between gap-1 mb-1 p-1.5 bg-blue-50 rounded">
                               <div className="flex-1 min-w-0">
                                 <p className="text-[10px] font-semibold text-blue-900 truncate">{driver.name}</p>
-                                <p className="text-[9px] text-blue-700">Qty: {driver.quantity}</p>
+                                <div className="flex items-center gap-1 mt-1">
+                                  <span className="text-[9px] text-blue-700">Qty:</span>
+                                  <div className="flex items-center gap-1 bg-white border border-blue-200 rounded p-0.5 shrink-0">
+                                    <button onClick={() => decreaseQuantity(driver.cartItemId)} className="w-4 h-4 flex items-center justify-center rounded hover:bg-gray-100 text-gray-700"><Minus className="w-2.5 h-2.5" /></button>
+                                    <input
+                                      type="number"
+                                      min="1"
+                                      value={driver.quantity || 1}
+                                      onChange={(e) => {
+                                        const value = parseInt(e.target.value) || 1;
+                                        updateQuantity(driver.cartItemId, value);
+                                      }}
+                                      className="w-6 text-center font-bold text-[10px] outline-none bg-transparent text-gray-900"
+                                    />
+                                    <button onClick={() => increaseQuantity(driver.cartItemId)} className="w-4 h-4 flex items-center justify-center rounded hover:bg-gray-100 text-gray-700"><Plus className="w-2.5 h-2.5" /></button>
+                                  </div>
+                                </div>
                               </div>
                               <button
                                 onClick={() => removeFromCart(driver.cartItemId)}

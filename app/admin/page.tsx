@@ -1203,6 +1203,7 @@ export default function AdminDashboard() {
                             // Update existing variant
                             const updated = [...current];
                             updated[editingWattageIndex] = {
+                              ...updated[editingWattageIndex],
                               watt: Number(newVariant.watt),
                               lumen: newVariant.lumen,
                               dimension: newVariant.dimension
