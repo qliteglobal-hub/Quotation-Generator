@@ -28,7 +28,7 @@ interface Product {
   territory?: string;
   application?: string;
 
-  watt?: number;
+  watt?: number | string;
   lumen?: string;
   beamAngle?: string;
   dimension?: string;
@@ -37,7 +37,7 @@ interface Product {
   accessories?: string;
   finish?: string;
   reflectorFinish?: string;
-  wattageVariants?: { watt: number; lumen: string; dimension: string; }[];
+  wattageVariants?: { watt: number | string; lumen: string; dimension: string; }[];
   ipRatings?: IpRatingPrice[]; // New structure with individual prices
   ipRating?: string[]; // Legacy field for backward compatibility
   price: number; // Legacy field
@@ -1204,7 +1204,7 @@ export default function AdminDashboard() {
                             const updated = [...current];
                             updated[editingWattageIndex] = {
                               ...updated[editingWattageIndex],
-                              watt: Number(newVariant.watt),
+                              watt: newVariant.watt,
                               lumen: newVariant.lumen,
                               dimension: newVariant.dimension
                             };
@@ -1215,7 +1215,7 @@ export default function AdminDashboard() {
                             setFormData({
                               ...formData,
                               wattageVariants: [...current, {
-                                watt: Number(newVariant.watt),
+                                watt: newVariant.watt,
                                 lumen: newVariant.lumen,
                                 dimension: newVariant.dimension
                               }]

@@ -9,13 +9,13 @@ const ProductSchema = new mongoose.Schema(
 
     application: { type: String },
 
-    watt: { type: Number },
+    watt: { type: mongoose.Schema.Types.Mixed },
     lumen: { type: String },
     beamAngle: { type: String },
     dimension: { type: String },
     wattageVariants: {
       type: [{
-        watt: { type: Number, required: true },
+        watt: { type: mongoose.Schema.Types.Mixed, required: true },
         lumen: { type: String, default: '' },
         dimension: { type: String, default: '' },
       }],
@@ -71,4 +71,5 @@ ProductSchema.index({ category: 1, watt: 1 });
 ProductSchema.index({ categoryFilter: 1, application: 1 });
 
 // ✅ No unique constraint at all
-export default mongoose.models.Product || mongoose.model("Product", ProductSchema);
+delete mongoose.models['Product'];
+export default mongoose.model("Product", ProductSchema);
