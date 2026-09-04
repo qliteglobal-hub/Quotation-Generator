@@ -72,18 +72,19 @@ export async function PUT(req: Request) {
         return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
     }
 
+    const prod = product as any;
     // Initialize array if it doesn't exist
-    if (!product[fieldName]) {
-      product[fieldName] = [];
+    if (!prod[fieldName]) {
+      prod[fieldName] = [];
     }
 
     // Add or remove file URL
     if (action === "add") {
-      if (!product[fieldName].includes(fileUrl)) {
-        product[fieldName].push(fileUrl);
+      if (!prod[fieldName].includes(fileUrl)) {
+        prod[fieldName].push(fileUrl);
       }
     } else if (action === "remove") {
-      product[fieldName] = product[fieldName].filter((url: string) => url !== fileUrl);
+      prod[fieldName] = prod[fieldName].filter((url: string) => url !== fileUrl);
       
       // Optionally delete from S3 (commented out for safety - you may want to keep files)
       // try {

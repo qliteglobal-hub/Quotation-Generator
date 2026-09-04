@@ -197,13 +197,13 @@ export default function EnhancedCart() {
   // Terms and Conditions state
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [termsAndConditions, setTermsAndConditions] = useState({
-    // Common LED lights terms (structured fields)
-    deliveryLocation: 'DDP Bahrain',
-    deliveryTime: '8-10 Weeks',
-    paymentTerms: '50% advance and balance 50% on delivery',
-    productMake: 'Qlite UK make',
-    validityDays: '45 days',
-    vatNote: 'VAT will charged as per applicable government regulations',
+    // Free-form terms text for LED Lights (multi-line, editable)
+    lightsTerms: 
+      '1. GST Will be charged extra @18%\n' +
+      '2. Freight Charges inclusive\n' +
+      '3. Payment will be 50% advance and 50% before Dispatch\n' +
+      '4. Delivery will be within 4 to 6 weeks from the date of Tehnocommercially Cleared PO\n' +
+      '5. 3 yrs warrenty over manufacturing defects',
     salesPersonName: '',
     // Which terms to use in the PDF: 'lights' | 'displays' | 'lightingControls'
     termsType: 'lights' as 'lights' | 'displays' | 'lightingControls',
@@ -1094,14 +1094,14 @@ export default function EnhancedCart() {
         };
       }
 
-      const terms = [
-        `1. The prices quoted on ${termsAndConditions.deliveryLocation}.`,
-        `2. Delivery: Within ${termsAndConditions.deliveryTime} from the date of PO and advance payment.`,
-        `3. Payment Terms: ${termsAndConditions.paymentTerms}.`,
-        `4. The quoted products are ${termsAndConditions.productMake}`,
-        `5. Validity of offer: ${termsAndConditions.validityDays}`,
-        `6. ${termsAndConditions.vatNote}`
-      ];
+      let terms: string[] = [];
+      if (termsAndConditions.termsType === 'displays') {
+        terms = (termsAndConditions.displayTerms || '').split('\n').map((t) => t.trim()).filter((t) => t.length > 0);
+      } else if (termsAndConditions.termsType === 'lightingControls') {
+        terms = (termsAndConditions.lightingControlsTerms || '').split('\n').map((t) => t.trim()).filter((t) => t.length > 0);
+      } else {
+        terms = (termsAndConditions.lightsTerms || '').split('\n').map((t) => t.trim()).filter((t) => t.length > 0);
+      }
 
       terms.forEach((term, index) => {
         const rowNum = termsStartRow + index + 1;
@@ -2942,15 +2942,11 @@ export default function EnhancedCart() {
             .map((t) => t.trim())
             .filter((t) => t.length > 0);
         } else {
-          // Default: LED Lights terms using structured fields
-          terms = [
-            `1. The prices quoted on ${termsAndConditions.deliveryLocation}.`,
-            `2. Delivery: Within ${termsAndConditions.deliveryTime} from the date of PO and advance payment.`,
-            `3. Payment Terms: ${termsAndConditions.paymentTerms}.`,
-            `4. The quoted products are ${termsAndConditions.productMake}`,
-            `5. Validity of offer: ${termsAndConditions.validityDays}`,
-            `6. ${termsAndConditions.vatNote}`,
-          ];
+          // Default: LED Lights terms
+          terms = (termsAndConditions.lightsTerms || '')
+            .split('\n')
+            .map((t) => t.trim())
+            .filter((t) => t.length > 0);
         }
 
         terms.forEach((term) => {
@@ -5834,141 +5830,59 @@ export default function EnhancedCart() {
                           </div>
                         ))
                     ) : (
-                      // Preview for LED Lights: structured terms using individual fields
-                      <>
-                        <div className="flex gap-1">
-                          <span className="shrink-0">1.</span>
-                          <span>
-                            The prices quoted on {termsAndConditions.deliveryLocation}.
-                          </span>
-                        </div>
-                        <div className="flex gap-1">
-                          <span className="shrink-0">2.</span>
-                          <span>
-                            Delivery: Within {termsAndConditions.deliveryTime} from the date of PO and advance payment.
-                          </span>
-                        </div>
-                        <div className="flex gap-1">
-                          <span className="shrink-0">3.</span>
-                          <span>Payment Terms: {termsAndConditions.paymentTerms}.</span>
-                        </div>
-                        <div className="flex gap-1">
-                          <span className="shrink-0">4.</span>
-                          <span>The quoted products are {termsAndConditions.productMake}</span>
-                        </div>
-                        <div className="flex gap-1">
-                          <span className="shrink-0">5.</span>
-                          <span>Validity of offer: {termsAndConditions.validityDays}</span>
-                        </div>
-                        <div className="flex gap-1">
-                          <span className="shrink-0">6.</span>
-                          <span>{termsAndConditions.vatNote}</span>
-                        </div>
-                      </>
+                      // Preview for LED Lights
+                      (termsAndConditions.lightsTerms || '')
+                        .split('\n')
+                        .map((line) => line.trim())
+                        .filter((line) => line.length > 0)
+                        .map((line, idx) => (
+                          <div key={idx} className="flex gap-1">
+                            <span className="shrink-0">•</span>
+                            <span className="whitespace-pre-wrap">{line}</span>
+                          </div>
+                        ))
                     )}
                   </div>
                 </div>
 
-                {/* Delivery Location */}
+                {/* Terms Editor */}
                 <div>
                   <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    1. Delivery Location
+                    Edit Terms & Conditions ({termsAndConditions.termsType === 'displays' ? 'LED Displays' : termsAndConditions.termsType === 'lightingControls' ? 'Lighting Controls' : 'LED Lights'})
                   </label>
-                  <input
-                    type="text"
-                    value={termsAndConditions.deliveryLocation}
-                    onChange={(e) => setTermsAndConditions(prev => ({ ...prev, deliveryLocation: e.target.value }))}
-                    placeholder="e.g., DDP Bahrain"
-                    className={`w-full px-4 py-2.5 rounded-lg text-sm transition-all outline-none ${isDarkMode
-                      ? 'bg-gray-800 border border-white/20 text-white placeholder-gray-500 focus:border-blue-500'
-                      : 'bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:border-blue-500'
-                      }`}
-                  />
-                </div>
-
-                {/* Delivery Time */}
-                <div>
-                  <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    2. Delivery Time
-                  </label>
-                  <input
-                    type="text"
-                    value={termsAndConditions.deliveryTime}
-                    onChange={(e) => setTermsAndConditions(prev => ({ ...prev, deliveryTime: e.target.value }))}
-                    placeholder="e.g., 8-10 Weeks"
-                    className={`w-full px-4 py-2.5 rounded-lg text-sm transition-all outline-none ${isDarkMode
-                      ? 'bg-gray-800 border border-white/20 text-white placeholder-gray-500 focus:border-blue-500'
-                      : 'bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:border-blue-500'
-                      }`}
-                  />
-                </div>
-
-                {/* Payment Terms */}
-                <div>
-                  <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    3. Payment Terms
-                  </label>
-                  <input
-                    type="text"
-                    value={termsAndConditions.paymentTerms}
-                    onChange={(e) => setTermsAndConditions(prev => ({ ...prev, paymentTerms: e.target.value }))}
-                    placeholder="e.g., 50% advance and balance 50% on delivery"
-                    className={`w-full px-4 py-2.5 rounded-lg text-sm transition-all outline-none ${isDarkMode
-                      ? 'bg-gray-800 border border-white/20 text-white placeholder-gray-500 focus:border-blue-500'
-                      : 'bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:border-blue-500'
-                      }`}
-                  />
-                </div>
-
-                {/* Product Make */}
-                <div>
-                  <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    4. Product Make
-                  </label>
-                  <input
-                    type="text"
-                    value={termsAndConditions.productMake}
-                    onChange={(e) => setTermsAndConditions(prev => ({ ...prev, productMake: e.target.value }))}
-                    placeholder="e.g., Qlite UK make"
-                    className={`w-full px-4 py-2.5 rounded-lg text-sm transition-all outline-none ${isDarkMode
-                      ? 'bg-gray-800 border border-white/20 text-white placeholder-gray-500 focus:border-blue-500'
-                      : 'bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:border-blue-500'
-                      }`}
-                  />
-                </div>
-
-                {/* Validity Days */}
-                <div>
-                  <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    5. Validity of Offer
-                  </label>
-                  <input
-                    type="text"
-                    value={termsAndConditions.validityDays}
-                    onChange={(e) => setTermsAndConditions(prev => ({ ...prev, validityDays: e.target.value }))}
-                    placeholder="e.g., 45 days"
-                    className={`w-full px-4 py-2.5 rounded-lg text-sm transition-all outline-none ${isDarkMode
-                      ? 'bg-gray-800 border border-white/20 text-white placeholder-gray-500 focus:border-blue-500'
-                      : 'bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:border-blue-500'
-                      }`}
-                  />
-                </div>
-
-                {/* VAT Note */}
-                <div>
-                  <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    6. VAT Note
-                  </label>
-                  <input
-                    type="text"
-                    value={termsAndConditions.vatNote}
-                    onChange={(e) => setTermsAndConditions(prev => ({ ...prev, vatNote: e.target.value }))}
-                    placeholder="e.g., VAT will charged as per applicable government regulations"
-                    className={`w-full px-4 py-2.5 rounded-lg text-sm transition-all outline-none ${isDarkMode
-                      ? 'bg-gray-800 border border-white/20 text-white placeholder-gray-500 focus:border-blue-500'
-                      : 'bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:border-blue-500'
-                      }`}
-                  />
+                  {termsAndConditions.termsType === 'displays' && (
+                    <textarea
+                      value={termsAndConditions.displayTerms}
+                      onChange={(e) => setTermsAndConditions(prev => ({ ...prev, displayTerms: e.target.value }))}
+                      rows={8}
+                      className={`w-full px-4 py-2.5 rounded-lg text-sm transition-all outline-none resize-y ${isDarkMode
+                        ? 'bg-gray-800 border border-white/20 text-white placeholder-gray-500 focus:border-blue-500'
+                        : 'bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:border-blue-500'
+                        }`}
+                    />
+                  )}
+                  {termsAndConditions.termsType === 'lightingControls' && (
+                    <textarea
+                      value={termsAndConditions.lightingControlsTerms}
+                      onChange={(e) => setTermsAndConditions(prev => ({ ...prev, lightingControlsTerms: e.target.value }))}
+                      rows={8}
+                      className={`w-full px-4 py-2.5 rounded-lg text-sm transition-all outline-none resize-y ${isDarkMode
+                        ? 'bg-gray-800 border border-white/20 text-white placeholder-gray-500 focus:border-blue-500'
+                        : 'bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:border-blue-500'
+                        }`}
+                    />
+                  )}
+                  {termsAndConditions.termsType === 'lights' && (
+                    <textarea
+                      value={termsAndConditions.lightsTerms}
+                      onChange={(e) => setTermsAndConditions(prev => ({ ...prev, lightsTerms: e.target.value }))}
+                      rows={8}
+                      className={`w-full px-4 py-2.5 rounded-lg text-sm transition-all outline-none resize-y ${isDarkMode
+                        ? 'bg-gray-800 border border-white/20 text-white placeholder-gray-500 focus:border-blue-500'
+                        : 'bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:border-blue-500'
+                        }`}
+                    />
+                  )}
                 </div>
 
                 {/* Sales Person Name */}
@@ -5998,12 +5912,19 @@ export default function EnhancedCart() {
                     Preview:
                   </h4>
                   <div className={`text-xs space-y-1.5 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    <p>1. The prices quoted on {termsAndConditions.deliveryLocation}.</p>
-                    <p>2. Delivery: Within {termsAndConditions.deliveryTime} from the date of PO and advance payment.</p>
-                    <p>3. Payment Terms: {termsAndConditions.paymentTerms}.</p>
-                    <p>4. The quoted products are {termsAndConditions.productMake}</p>
-                    <p>5. Validity of offer: {termsAndConditions.validityDays}</p>
-                    <p>6. {termsAndConditions.vatNote}</p>
+                    {termsAndConditions.termsType === 'displays' ? (
+                      (termsAndConditions.displayTerms || '').split('\n').map((line, idx) => (
+                        <p key={idx}>{line}</p>
+                      ))
+                    ) : termsAndConditions.termsType === 'lightingControls' ? (
+                      (termsAndConditions.lightingControlsTerms || '').split('\n').map((line, idx) => (
+                        <p key={idx}>{line}</p>
+                      ))
+                    ) : (
+                      (termsAndConditions.lightsTerms || '').split('\n').map((line, idx) => (
+                        <p key={idx}>{line}</p>
+                      ))
+                    )}
                     <p className="mt-3">Thanking You</p>
                     <p className="mt-2">Yours Sincerely</p>
                     {termsAndConditions.salesPersonName && (
